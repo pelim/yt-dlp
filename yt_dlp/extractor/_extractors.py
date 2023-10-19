@@ -803,6 +803,7 @@ from .hungama import (
     HungamaAlbumPlaylistIE,
 )
 from .hypem import HypemIE
+from .hypeddit import HypedditIE
 from .hypergryph import MonsterSirenHypergryphMusicIE
 from .hytale import HytaleIE
 from .icareus import IcareusIE
