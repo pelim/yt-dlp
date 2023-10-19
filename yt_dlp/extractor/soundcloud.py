@@ -334,6 +334,7 @@ class SoundcloudBaseIE(InfoExtractor):
             'duration': float_or_none(info.get('duration'), 1000),
             'webpage_url': info.get('permalink_url'),
             'license': info.get('license'),
+            'purchase_url': info.get('purchase_url'),
             'view_count': extract_count('playback'),
             'like_count': extract_count('favoritings') or extract_count('likes'),
             'comment_count': extract_count('comment'),
