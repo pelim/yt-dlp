@@ -20,18 +20,36 @@ from ..utils import (
 class HypedditIE(InfoExtractor):
     _VALID_URL = r'https?://(?:www\.)?hypeddit\.com/(?P<id>[A-z0-9]+)'
     _TESTS = [{
-        'url': 'https://hypeddit.com/gjm094',
+        'url': 'https://hypeddit.com/0ytp1m',
         'md5': '57cb297e6b2e551740d5a0b8084c3a79',
         'info_dict': {
-            'id': 'gjm094',
+            'id': '0ytp1m',
             'ext': 'wav',
             'artist': 'Rocco Arizona',
             'title': 'Look What You Made Me Do',
-            'thumbnail': 'https://hypeddit-gates-prod.s3.amazonaws.com/gjm094_coverartmanual',
+            'thumbnail': 'https://hypeddit-gates-prod.s3.amazonaws.com/0ytp1m_coverartmanual',
         }
     }]
 
     _BASE_URL = 'https://hypeddit-gates-prod.s3.amazonaws.com/'
+
+    def _lookup_url_by_file(self, key):
+        print("Looking up URL for key:", key)
+        file_path = '/tmp/hypeddit-aws.txt'  # Static file path
+        try:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    parts = line.strip().split(";")
+                    if len(parts) == 2:
+                        if parts[0] == key:
+                            return parts[1]
+            return None
+        except FileNotFoundError:
+            print(f"The file at {file_path} was not found.")
+            return None
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
     def _real_extract(self, url):
         video_id = self._match_id(url)
@@ -43,8 +61,7 @@ class HypedditIE(InfoExtractor):
         filename = artist + ' ' + title + '.wav'
 
         video_id = self._hidden_inputs(webpage)['current_download_file_listner']
-
-        track_url = self._BASE_URL + video_id + '_main'
+        track_url = self._lookup_url_by_file(video_id)
         thumbnail_url = self._BASE_URL + video_id + '_coverartmanual'
 
         urlh = self._request_webpage(
@@ -58,5 +75,5 @@ class HypedditIE(InfoExtractor):
             'url': track_url,
             'thumbnail': thumbnail_url,
             'filepath': filename,
-            'ext': ext
+            'ext': 'wav'
         }
